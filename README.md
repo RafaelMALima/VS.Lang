@@ -7,6 +7,10 @@ sequences, blockstring and OKI, withou needing to actually perform said combos.
 
 ### EBNF da linguagem
 ```
+LOCALS = {"begin", ":", BLOCK, "end" };
+
+BLOCK = {STATEMENT};
+
 STATEMENT = ( "λ" | ASSIGNMENT | SAY | WHILE | IF | WAIT), "\n" ;
 
 ASSIGNMENT = (TYPE, IDENTIFIER, "=", EXPRESSION ) | ("attack", IDENTIFIER, "=" ,EXPRESSION, ",",EXPRESSION,",",EXPRESSION,",",EXPRESSION,",", EXPRESSION) ;
