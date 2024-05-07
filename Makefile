@@ -9,4 +9,5 @@ clean:
 	rm -rf src/fight.tab.c
 	rm -rf src/fight.tab.h
 
-
+rebuild:
+	make clean && make fight

@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 extern FILE *yyin;
-int yyflex(void);
-void yyerror(char *s);
+int yylex(void);
+void yyerror(const char *s);
 %}
 
 %union{
@@ -20,16 +20,19 @@ void yyerror(char *s);
 %token <number> DAMAGE
 %token <number> INT
 
+%token OTHER
+
 %%
 
 program
-    :BEGIN_BLOCK TWOPS block END_BLOCK program
-    |BEGIN_BLOCK TWOPS block END_BLOCK
+    :BEGIN_BLOCK TWOPS IDENTIFIER block
+    |LINEBREAK
+    |
     ;
 
 block
-    :statement LINEBREAK block
-    |
+    :LINEBREAK statement block
+    |END_BLOCK
     ;
 
 statement
@@ -39,26 +42,28 @@ statement
     | while_st
     | if_st
     | wait_st
+    |
     ;
 
 wait_st
-    : WAIT expression
+    : WAIT player_exp
     ;
 
 assignment_st
-    : IDENTIFIER ASSIGN bool_exp
+    : IDENTIFIER ASSIGN player_exp {printf("assign");}
     ;
 
 declare_st
-    : TYPE IDENTIFIER ASSIGN bool_exp
+    : TYPE IDENTIFIER ASSIGN player_exp {printf("dec");}
+    | TYPE IDENTIFIER
     ;
 
 say_st
-    :SAY bool_exp
+    :SAY player_exp
     ;
 
 while_st
-    : WHILE TWOPS bool_exp LINEBREAK block END_BLOCK
+    : WHILE TWOPS player_exp LINEBREAK block END_BLOCK
     ;
 
 if_st
@@ -66,47 +71,49 @@ if_st
     ;
 
 player_exp
-    : players
-    | bool_exp
+    : bool_exp
     ;
 
 
 bool_exp
-    : bool_term OR bool_term bool_exp
+    : bool_term OR bool_exp
+    | bool_term
     ;
 
 bool_term
-    : rel_exp AND rel_exp
-    |rel_exp
+    : rel_exp AND bool_term
+    | rel_exp
     ;
 
 rel_exp
-    : rel_exp EQUALS expression
-    | rel_exp GREATER expression
-    | rel_exp LESS expression
+    : expression EQUALS rel_exp
+    | expression GREATER rel_exp
+    | expression LESS rel_exp
     | expression
     ;
 
 expression
-    : expression ADD term
-    | expression SUB term
+    : term ADD expression
+    | term SUB expression
     | term 
     ;
 
 term
-    : term MUL factor
-    | term DIV factor
+    : factor MUL term
+    | factor DIV term
     | factor
     ;
 
 factor
     : DELAY
     | INPUTS
+    | ATTACK
+    | NUM
     | IDENTIFIER
     | ADD factor
     | SUB factor
     | NOT factor
-    | RIGHTP expression LEFTP
+    | RIGHTP player_exp LEFTP
     ;
 
 players
@@ -119,11 +126,15 @@ void yyerror(const char *s) {
     fprintf(stderr, "Error: %s\n", s);
 }
 
-int main(void) {
-    if (yyparse() == 0) {
-        printf("Parsing complete!\n");
-    } else {
-        printf("Parsing failed.\n");
+int main(int argc, char *argv[]) {
+    if (argc != 2) {printf("Numero errado de args");}
+    FILE *input_file = fopen(argv[1], "r");
+    if (!input_file) {
+        printf("file not found");
+        return 1;
     }
+    yyin = input_file;
+    yyparse();
+    fclose(input_file);
     return 0;
 }

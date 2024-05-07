@@ -1,4 +1,4 @@
-begin: COMBO
+begin : COMBO
     delay first_input_startup = 10f
     input first_input = 412K
     delay enemy_hitstun = 10f
@@ -20,7 +20,7 @@ begin: COMBO
     delay player_recovery = 10f
     delay initial_hitstun = 15f
     delay enemy_hitstun = initial_hitstun
-    dleay hitstun_falloff = 1f
+    delay hitstun_falloff = 1f
 
     int how_many_loops = 0;
 

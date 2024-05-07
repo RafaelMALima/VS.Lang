@@ -3,7 +3,6 @@
 #include <string.h>
 #include "fight.tab.h"
 //#include <stdio.h>
-void showError;
 
 %}
 
@@ -14,8 +13,11 @@ VALID_INPUTS ([a-d]|u|d|l|r|(L|M|H)(P|K)|←|→|↑|↓|P|K|S|HS|D|[0-9]|\+])+
 DELAY ([0-9])+f
 
 TYPE ("delay"|"damage"|"attack"|"int")
-
+NEWLINES ([\n\r]|\\n)+
+WHITESPACE [ \t\n\s]+
 PLAYERSTATE ("HITSTUN"|"BLOCKSTUN"|"GROUNDED"|"IDLE")
+
+
 %%
 
 "begin"         {return BEGIN_BLOCK;}
@@ -44,23 +46,20 @@ PLAYERSTATE ("HITSTUN"|"BLOCKSTUN"|"GROUNDED"|"IDLE")
 "or"            {return OR;}
 "not"           {return NOT;}
 "("             {return RIGHTP;}
-")"             {return REFTP;}
+")"             {return LEFTP;}
 ","             {return COMMA;}
-"\\n"           {return LINEBREAK;}
-":"             {return TWOPS}
+{NEWLINES}      {return LINEBREAK;}
+":"             {return TWOPS;}
 
-{TYPE}          {return TYPE;}
-{NUMBER}        {return NUM;}
-{IDENT}         {return IDENTIFIER;}
+{WHITESPACE}    ;
+{TYPE}          {printf("type \n "); return TYPE;}
+{NUMBER}        {printf("n \n"); return NUM;}
 {VALID_INPUTS}  {return INPUTS;}
 {PLAYERSTATE}   {return PLAYERSTATES;}
 {PLAYER}        {return PLAYER;}
 {DELAY}         {return DELAY;}
-.               {showError(); return(OTHER);}
-
-void ShowError(){
-    printf("Input not found");
-}
+{IDENT}         {return IDENTIFIER;}
+.               {printf("Token not found"); return OTHER;};
 
 %%
 
