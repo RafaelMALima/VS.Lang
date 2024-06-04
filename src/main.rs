@@ -379,6 +379,10 @@ impl EvaluateTrait for Nodes{
                     }
                     _ => {println!("Wrong value recieved during evaluate from player action");}
                 }
+                match player.state{
+                    Playerstate::Idle => {},
+                    _ => {println!("{playername} cannot attacks when not Idle."); return NodeValue::None }
+                }
                 match delay{
                     NodeValue::Int(delay) => {
                         player.current_delay = delay;
@@ -391,7 +395,7 @@ impl EvaluateTrait for Nodes{
                 }
 
                 player.state = Playerstate::Attacking;
-                return  NodeValue::Int(0);
+                return  NodeValue::None;
             }
             Nodes::PlayerHit(player_action) => {
                 let mut player = &mut Player{state: Playerstate::Idle, life: 0, current_delay :0};
@@ -440,10 +444,12 @@ impl EvaluateTrait for Nodes{
                     NodeValue::Int(delay) => {
                         pt.player.current_delay -= delay;
                         pt.enemy.current_delay -= delay;
-                        pt.update_states();
+                        //pt.update_states();
                     }
                     _ => {}
                 };
+                println!("Gamestates after wait: player: {:>+} | enemy: {:>+}", -pt.player.current_delay, -pt.enemy.current_delay);
+                pt.update_states();
                 return NodeValue::None;
             }
             Nodes::NoOp(_) => {return NodeValue::Int(0);},

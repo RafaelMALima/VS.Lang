@@ -6,10 +6,12 @@ begin : COMBO
     player_recovery = 9f
     attack_damage = 10
 
-    PLAYER uses first_input, first_input_startup
+    PLAYER uses first_input, first_input_startup+player_recovery
     ENEMY hit with first_input, enemy_hitstun, attack_damage 
 
-    wait player_recovery
+    wait 15f
+    PLAYER uses first_input, first_input_startup+player_recovery
+    ENEMY uses first_input, first_input_startup+player_recovery
 
     if: player_recovery > enemy_hitstun
         print "player is plus"
