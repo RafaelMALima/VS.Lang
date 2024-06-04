@@ -827,7 +827,7 @@ impl Tokenizer {
     fn select_next(&mut self) {
         
         //não tava com saco de fazer o tokenizer sem regex pra capturar input, então cá está
-        let inputs_regex : Regex = Regex::new(r"^([a-d]|u|d|l|r|(L|M|H)(P|K)|←|→|↑|↓|P|K|S|HS|D|[0-9]|\+])+$").unwrap();
+        let inputs_regex : Regex = Regex::new(r"^([a-d]|u|d|l|r|(L|M|H)(P|K)|←|→|↑|↓|H|P|K|S|HS|D|[0-9]|\+])+$").unwrap();
 
         if self.position < self.source.len(){
             let mut current_char = self.source.chars().nth(self.position).unwrap();
@@ -878,6 +878,28 @@ impl Tokenizer {
                     match self.source.chars().nth(self.position){
                         Some(n) => current_char = n,
                         None => break
+                    }
+                }
+                match self.source.chars().nth(self.position){
+                    Some(n) => current_char = n,
+                    None => {}
+                }
+                //check if a delay was invoked
+                if current_char == 'f'{
+                    self.position += 1;
+                }
+                else if ['P','K','S','H'].contains(&current_char){
+                    self.next.value = -20;
+                    let mut inputs = self.next.token.clone();
+                    inputs.push(current_char);
+                    while inputs_regex.is_match(inputs.as_str()){
+                        self.next.token = inputs.clone();
+                        self.position += 1;
+                        match self.source.chars().nth(self.position){
+                            Some(n) => current_char = n,
+                            None => {}
+                        }
+                        inputs.push(current_char);
                     }
                 }
             }
@@ -1026,7 +1048,7 @@ impl<'a> Parser<'a> {
                 if self.tokenizer.next.token.as_str() == "wait" {
                     self.tokenizer.select_next();
 
-                    let wait_node = Nodes::UnOp(UnOp::new(NodeValue::Char(' '), vec![self.boolean_expression()]));
+                    let wait_node = Nodes::Wait(UnOp::new(NodeValue::Char(' '), vec![self.boolean_expression()]));
                     return wait_node;
                 }
                 if self.tokenizer.next.token.as_str() == "print"{

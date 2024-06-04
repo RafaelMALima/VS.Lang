@@ -1,16 +1,18 @@
-begin: teste
-    delay = 5
-    attack = HS
-    damage = 1
-    ENEMY hit with attack, delay, damage
-    i = 0
-    while : 5  > i
-        print "pinto"
-        i = i + 1
-        if : i == 4
-            print "pinto pinto"
-        end
+
+begin : COMBO
+    first_input_startup = 10f
+    first_input = 412HP
+    enemy_hitstun = 10f
+    player_recovery = 9f
+    attack_damage = 10
+
+    PLAYER uses first_input, first_input_startup
+    ENEMY hit with first_input, enemy_hitstun, attack_damage 
+
+    wait player_recovery
+
+    if: player_recovery > enemy_hitstun
+        print "player is plus"
     end
 end
-
 
