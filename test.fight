@@ -1,0 +1,16 @@
+begin: teste
+    delay = 5
+    attack = HS
+    damage = 1
+    ENEMY hit with attack, delay, damage
+    i = 0
+    while : 5  > i
+        print "pinto"
+        i = i + 1
+        if : i == 4
+            print "pinto pinto"
+        end
+    end
+end
+
+
