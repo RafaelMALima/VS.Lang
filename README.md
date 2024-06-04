@@ -15,7 +15,7 @@ BLOCK = {STATEMENT};
 
 STATEMENT = ( "λ" | ASSIGNMENT | PRINT | WHILE | IF | WAIT | PLAYER_STATEMENT), "\n" ;
 
-ASSIGNMENT = (TYPE, IDENTIFIER, "=", EXPRESSION ) | ("attack", IDENTIFIER, "=" ,EXPRESSION, ",",EXPRESSION,",",EXPRESSION,",",EXPRESSION,",", EXPRESSION) ;
+ASSIGNMENT = ( IDENTIFIER, "=", EXPRESSION ) | ("attack", IDENTIFIER, "=" ,EXPRESSION, ",",EXPRESSION,",",EXPRESSION,",",EXPRESSION,",", EXPRESSION) ;
 PRINT = "PRINT", EXPRESSION ;
 WHILE = "while", ":", BOOL_EXP, "\n", "λ", { ( STATEMENT ), "λ" }, "end";
 IF = "if", BOOL_EXP, "then", "\n", "λ", { ( STATEMENT ), "λ" }, ( "λ" | ( "else", "\n", "λ", { ( STATEMENT ), "λ" })), "end" ;
