@@ -54,47 +54,46 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    BEGIN_BLOCK = 258,             /* BEGIN_BLOCK  */
-    END_BLOCK = 259,               /* END_BLOCK  */
-    WHILE = 260,                   /* WHILE  */
-    IF = 261,                      /* IF  */
-    ELSE = 262,                    /* ELSE  */
-    IS = 263,                      /* IS  */
-    IN = 264,                      /* IN  */
-    HIT = 265,                     /* HIT  */
-    WITH = 266,                    /* WITH  */
-    FOR = 267,                     /* FOR  */
-    USES = 268,                    /* USES  */
-    NUM = 269,                     /* NUM  */
-    INPUTS = 270,                  /* INPUTS  */
-    TYPE = 271,                    /* TYPE  */
-    TWOPS = 272,                   /* TWOPS  */
-    IDENTIFIER = 273,              /* IDENTIFIER  */
-    PLAYER = 274,                  /* PLAYER  */
-    WAIT = 275,                    /* WAIT  */
-    PLAYERSTATES = 276,            /* PLAYERSTATES  */
-    THEN = 277,                    /* THEN  */
-    ADD = 278,                     /* ADD  */
-    SUB = 279,                     /* SUB  */
-    MUL = 280,                     /* MUL  */
-    DIV = 281,                     /* DIV  */
-    ASSIGN = 282,                  /* ASSIGN  */
-    EQUALS = 283,                  /* EQUALS  */
-    GREATER = 284,                 /* GREATER  */
-    LESS = 285,                    /* LESS  */
-    AND = 286,                     /* AND  */
-    OR = 287,                      /* OR  */
-    NOT = 288,                     /* NOT  */
-    RIGHTP = 289,                  /* RIGHTP  */
-    LEFTP = 290,                   /* LEFTP  */
-    COMMA = 291,                   /* COMMA  */
-    LINEBREAK = 292,               /* LINEBREAK  */
-    SAY = 293,                     /* SAY  */
-    ATTACK = 294,                  /* ATTACK  */
-    DELAY = 295,                   /* DELAY  */
-    DAMAGE = 296,                  /* DAMAGE  */
-    INT = 297,                     /* INT  */
-    OTHER = 298                    /* OTHER  */
+    PLAYER = 258,                  /* PLAYER  */
+    PLAYERSTATES = 259,            /* PLAYERSTATES  */
+    INPUTS = 260,                  /* INPUTS  */
+    IDENTIFIER = 261,              /* IDENTIFIER  */
+    NUM = 262,                     /* NUM  */
+    DELAY = 263,                   /* DELAY  */
+    TYPE = 264,                    /* TYPE  */
+    STRING = 265,                  /* STRING  */
+    BEGIN_BLOCK = 266,             /* BEGIN_BLOCK  */
+    END_BLOCK = 267,               /* END_BLOCK  */
+    WHILE = 268,                   /* WHILE  */
+    IF = 269,                      /* IF  */
+    ELSE = 270,                    /* ELSE  */
+    IS = 271,                      /* IS  */
+    THEN = 272,                    /* THEN  */
+    IN = 273,                      /* IN  */
+    HIT = 274,                     /* HIT  */
+    WITH = 275,                    /* WITH  */
+    FOR = 276,                     /* FOR  */
+    BLOCKS = 277,                  /* BLOCKS  */
+    USES = 278,                    /* USES  */
+    COMMA = 279,                   /* COMMA  */
+    LINEBREAK = 280,               /* LINEBREAK  */
+    TWOPS = 281,                   /* TWOPS  */
+    WAIT = 282,                    /* WAIT  */
+    ADD = 283,                     /* ADD  */
+    SUB = 284,                     /* SUB  */
+    MUL = 285,                     /* MUL  */
+    DIV = 286,                     /* DIV  */
+    ASSIGN = 287,                  /* ASSIGN  */
+    EQUALS = 288,                  /* EQUALS  */
+    GREATER = 289,                 /* GREATER  */
+    LESS = 290,                    /* LESS  */
+    AND = 291,                     /* AND  */
+    OR = 292,                      /* OR  */
+    NOT = 293,                     /* NOT  */
+    RIGHTP = 294,                  /* RIGHTP  */
+    LEFTP = 295,                   /* LEFTP  */
+    PRINT = 296,                   /* PRINT  */
+    OTHER = 297                    /* OTHER  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -103,13 +102,18 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 9 "src/fight.y"
+#line 12 "src/fight.y"
 
-    char* input;
-    char* identifier;
-    int number;
+    int int_val;
+    char *str_val;
+    char *type;
+    char *inputs;
+    char *identifier;
+    char *playerstates;
+    char *player;
+    char *str;
 
-#line 113 "src/fight.tab.h"
+#line 117 "src/fight.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

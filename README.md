@@ -7,17 +7,20 @@ sequences, blockstring and OKI, withou needing to actually perform said combos.
 
 ### EBNF da linguagem
 ```
+PROGRAM = { LOCALS }
+
 LOCALS = {"begin", ":", BLOCK, "end" };
 
 BLOCK = {STATEMENT};
 
-STATEMENT = ( "λ" | ASSIGNMENT | SAY | WHILE | IF | WAIT), "\n" ;
+STATEMENT = ( "λ" | ASSIGNMENT | PRINT | WHILE | IF | WAIT | PLAYER_STATEMENT), "\n" ;
 
 ASSIGNMENT = (TYPE, IDENTIFIER, "=", EXPRESSION ) | ("attack", IDENTIFIER, "=" ,EXPRESSION, ",",EXPRESSION,",",EXPRESSION,",",EXPRESSION,",", EXPRESSION) ;
-SAY = "say", EXPRESSION ;
+PRINT = "PRINT", EXPRESSION ;
 WHILE = "while", ":", BOOL_EXP, "\n", "λ", { ( STATEMENT ), "λ" }, "end";
 IF = "if", BOOL_EXP, "then", "\n", "λ", { ( STATEMENT ), "λ" }, ( "λ" | ( "else", "\n", "λ", { ( STATEMENT ), "λ" })), "end" ;
 WAIT = "wait", EXPRESSION;
+PLAYER_STATEMENT = ("PLAYER"|"ENEMY"), (("uses" BOOL_EXP "," BOOL_EXP) | ("hit with " BOOL_EXP "," BOOL_EXP "," BOOL_EXP) | (BLOCKS BOOL_EXP "," BOOL_EXP))
 
 BOOL_EXP = BOOL_TERM, { ("or"), BOOL_TERM } ;
 
@@ -31,7 +34,7 @@ TERM = FACTOR, { ("*" | "/"), FACTOR } ;
 
 FACTOR = DELAY | INPUT | IDENTIFIER | PLAYERS | (("+" | "-" | "not"), FACTOR ) | "(", EXPRESSION, ")" | "read", "(", ")" ;
 
-PLAYERS = ("ENEMY" | "PLAYER"), (PLAYERSTATES | ("is", ("hit", "with", IDENTIFIER) | ("in", PLAYERSTATES, "for", EXPRESSION)) | "uses", IDENTIFIER);
+PLAYERS = ("ENEMY" | "PLAYER"), (("in" PLAYERSTATES);
 
 IDENTIFIER = LETTER, { LETTER | DIGIT | "_" } ;
 

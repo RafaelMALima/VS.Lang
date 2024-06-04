@@ -1,140 +1,154 @@
 %{
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+
 extern FILE *yyin;
+
 int yylex(void);
-void yyerror(const char *s);
+void yyerror(char *s);
 %}
 
-%union{
-    char* input;
-    char* identifier;
-    int number;
+%union {
+    int int_val;
+    char *str_val;
+    char *type;
+    char *inputs;
+    char *identifier;
+    char *playerstates;
+    char *player;
+    char *str;
 }
 
-%token BEGIN_BLOCK END_BLOCK WHILE IF ELSE IS IN HIT WITH FOR USES NUM INPUTS TYPE TWOPS IDENTIFIER PLAYER WAIT PLAYERSTATES THEN
-%token ADD SUB MUL DIV ASSIGN EQUALS GREATER LESS AND OR NOT RIGHTP LEFTP COMMA LINEBREAK SAY
-
-%token <input> ATTACK
-%token <number> DELAY
-%token <number> DAMAGE
-%token <number> INT
+%token <player> PLAYER
+%token <playerstates> PLAYERSTATES
+%token <inputs> INPUTS
+%token <identifier> IDENTIFIER
+%token <int_val> NUM DELAY
+%token <type> TYPE
+%token <str> STRING
+%token BEGIN_BLOCK END_BLOCK WHILE IF ELSE IS THEN IN HIT WITH FOR BLOCKS USES COMMA LINEBREAK TWOPS
+%token WAIT ADD SUB MUL DIV ASSIGN EQUALS GREATER LESS AND OR NOT RIGHTP LEFTP PRINT
 
 %token OTHER
 
 %%
 
 program
-    :BEGIN_BLOCK TWOPS IDENTIFIER block
-    |LINEBREAK
+    : sequence program
+    | sequence
+    ;
+
+sequence
+    : newlines BEGIN_BLOCK TWOPS IDENTIFIER block END_BLOCK 
+    ;
+
+
+newlines
+    : LINEBREAK
     |
     ;
 
 block
-    :LINEBREAK statement block
-    |END_BLOCK
+    : newlines
+    | statement block
     ;
+
 
 statement
-    : assignment_st
-    | declare_st
-    | say_st
-    | while_st
-    | if_st
-    | wait_st
-    |
-    ;
-
-wait_st
-    : WAIT player_exp
-    ;
-
-assignment_st
-    : IDENTIFIER ASSIGN player_exp {printf("assign");}
-    ;
-
-declare_st
-    : TYPE IDENTIFIER ASSIGN player_exp {printf("dec");}
-    | TYPE IDENTIFIER
-    ;
-
-say_st
-    :SAY player_exp
-    ;
-
-while_st
-    : WHILE TWOPS player_exp LINEBREAK block END_BLOCK
-    ;
-
-if_st
-    : IF player_exp THEN block ELSE block END_BLOCK
-    ;
-
-player_exp
-    : bool_exp
+    : IDENTIFIER ASSIGN expression
+    | PRINT bool_expression
+    | WHILE TWOPS bool_expression block END_BLOCK
+    | IF TWOPS bool_expression block END_BLOCK
+    | PLAYER player_statement
+    | WAIT bool_expression
     ;
 
 
-bool_exp
-    : bool_term OR bool_exp
-    | bool_term
+player_statement
+    : USES bool_expression COMMA bool_expression
+    | HIT WITH bool_expression COMMA bool_expression COMMA bool_expression
+    | BLOCKS bool_expression COMMA bool_expression
+    ;
+
+variable
+    : INPUTS
+    | PLAYERSTATES
+    | NUM
+    | DELAY
+    | STRING
+    ;
+
+bool_expression
+    : bool_term
+    | bool_expression OR bool_term
+//    | player bool_expression
+//    | player
     ;
 
 bool_term
-    : rel_exp AND bool_term
-    | rel_exp
+    : rel_exp
+    | bool_term AND rel_exp
     ;
 
 rel_exp
-    : expression EQUALS rel_exp
-    | expression GREATER rel_exp
-    | expression LESS rel_exp
+    : rel_exp EQUALS expression
+    | rel_exp GREATER expression
+    | rel_exp LESS expression
     | expression
     ;
 
 expression
-    : term ADD expression
-    | term SUB expression
-    | term 
+    : expression ADD term
+    | expression SUB term
+    | term
     ;
 
 term
-    : factor MUL term
-    | factor DIV term
+    : term MUL factor
+    | term DIV factor
     | factor
     ;
 
 factor
-    : DELAY
-    | INPUTS
-    | ATTACK
-    | NUM
+    : variable
     | IDENTIFIER
-    | ADD factor
-    | SUB factor
-    | NOT factor
-    | RIGHTP player_exp LEFTP
+    | player
+    | RIGHTP bool_expression LEFTP
+    | unop factor
     ;
 
-players
-    : PLAYER IS HIT WITH IDENTIFIER
-    | PLAYER IN PLAYERSTATES FOR factor
+unop
+    : ADD
+    | SUB
+    | NOT
     ;
+
+player
+    : PLAYER IN PLAYERSTATES
+    ;
+
 %%
 
-void yyerror(const char *s) {
-    fprintf(stderr, "Error: %s\n", s);
-}
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {printf("Numero errado de args");}
+    if (argc != 2) {
+        fprintf(stderr, "Expected args: %s <input_file>\n", argv[0]);
+        return 1;
+    }
     FILE *input_file = fopen(argv[1], "r");
     if (!input_file) {
-        printf("file not found");
+        fprintf(stderr, "Error: could not open file %s\n", argv[1]);
         return 1;
     }
     yyin = input_file;
     yyparse();
+
     fclose(input_file);
+    printf("Finished parsing file!");
     return 0;
+}
+
+void yyerror(char *s) {
+    fprintf(stderr, "error: %s\n", s);
 }

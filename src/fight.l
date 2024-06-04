@@ -11,6 +11,7 @@ IDENT  [a-zA-Z_][a-zA-Z0-9_]*
 PLAYER ("ENEMY"|"PLAYER")
 VALID_INPUTS ([a-d]|u|d|l|r|(L|M|H)(P|K)|←|→|↑|↓|P|K|S|HS|D|[0-9]|\+])+
 DELAY ([0-9])+f
+STRING (\".*\")
 
 TYPE ("delay"|"damage"|"attack"|"int")
 NEWLINES ([\n\r]|\\n)+
@@ -20,6 +21,7 @@ PLAYERSTATE ("HITSTUN"|"BLOCKSTUN"|"GROUNDED"|"IDLE")
 
 %%
 
+{WHITESPACE}    ;
 "begin"         {return BEGIN_BLOCK;}
 "end"           {return END_BLOCK;}
 "while"         {return WHILE;}
@@ -33,6 +35,8 @@ PLAYERSTATE ("HITSTUN"|"BLOCKSTUN"|"GROUNDED"|"IDLE")
 "for"           {return FOR;}
 "uses"          {return USES;}
 "wait"          {return WAIT;}
+"print"         {return PRINT;}
+"blocks"        {return BLOCKS;}
 
 "+"             {return ADD;}
 "-"             {return SUB;}
@@ -51,15 +55,15 @@ PLAYERSTATE ("HITSTUN"|"BLOCKSTUN"|"GROUNDED"|"IDLE")
 {NEWLINES}      {return LINEBREAK;}
 ":"             {return TWOPS;}
 
-{WHITESPACE}    ;
-{TYPE}          {printf("type \n "); return TYPE;}
-{NUMBER}        {printf("n \n"); return NUM;}
+{TYPE}          {return TYPE;}
+{NUMBER}        {return NUM;}
 {VALID_INPUTS}  {return INPUTS;}
 {PLAYERSTATE}   {return PLAYERSTATES;}
 {PLAYER}        {return PLAYER;}
 {DELAY}         {return DELAY;}
 {IDENT}         {return IDENTIFIER;}
-.               {printf("Token not found"); return OTHER;};
+{STRING}        {return STRING;}
+.               {printf("Token not found \n"); return OTHER;};
 
 %%
 
