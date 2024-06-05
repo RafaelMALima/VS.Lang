@@ -1,0 +1,8 @@
+begin: jump
+    jump_input = 9K
+    jump_duration = 60f
+    PLAYER uses jump_input, jump_duration
+    if: PLAYER in JUMPING
+        print "player jumped!"
+    end
+end

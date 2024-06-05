@@ -374,6 +374,10 @@ impl EvaluateTrait for Nodes{
                 let inputs = player_action.n.children[0].evaluate(sb, ft, pt);
                 let delay = player_action.n.children[1].evaluate(sb, ft, pt);
 
+                
+                let jump_regex : Regex = Regex::new(r"^([u|[7-9]|\+])+(P|K|HS|S)$").unwrap();
+                let mut is_jumping: bool = false;
+
                 let mut playername = String::new();
                 match player_action.n.value.clone(){
                     NodeValue::String(x) => {
@@ -401,11 +405,16 @@ impl EvaluateTrait for Nodes{
                     x => {dbg!(x);}
                 }
                 match inputs{
-                    NodeValue::String(inp) => {println!("{playername} used {inp}", );}
+                    NodeValue::String(inp) => {println!("{playername} used {inp}", ); is_jumping = jump_regex.is_match(inp.as_str())}
                     _ => {}
                 }
 
-                player.state = Playerstate::Attacking;
+                if is_jumping{
+                    player.state = Playerstate::Jumping;
+                } else{
+                    player.state = Playerstate::Attacking;
+                }
+
                 return  NodeValue::None;
             }
             Nodes::PlayerHit(player_action) => {
