@@ -41,6 +41,8 @@ pub enum Nodes {
     VarDec(Ident),
     PlayerUse(PlayerActionNode),
     PlayerHit(PlayerActionNode),
+    PlayerBlock(PlayerActionNode),
+    PlayerState(PlayerActionNode),
     Wait(UnOp),
     Return(Return)
 }
@@ -240,13 +242,22 @@ impl EvaluateTrait for Nodes{
             Nodes::Block(block) => {
 
                 //println!("eval block");
+                match block.n.value.clone(){
+                    NodeValue::String(block_name) => {println!("----------------- \n Begining of sequence {} \n-----------------",block_name)},
+                    _ => {}
+                }
+                let mut new_pt = Playermap::new();
                 for child in block.n.children.iter(){
                     let is_return = false;
                     match child{
-                        Nodes::Return(_) => {return child.evaluate(sb, ft, pt)},
+                        Nodes::Return(_) => {return child.evaluate(sb, ft, &mut new_pt)},
                         _ => {}
                     }
-                    child.evaluate(sb,ft,pt);
+                    child.evaluate(sb,ft,&mut new_pt);
+                }
+                match block.n.value.clone(){
+                    NodeValue::String(block_name) => {println!("-----------------\n End of sequence {}\n-----------------",block_name)},
+                    _ => {}
                 }
                 return NodeValue::Int(0);
             },
@@ -437,6 +448,80 @@ impl EvaluateTrait for Nodes{
 
                 player.state = Playerstate::Hitstun;
                 return  NodeValue::Int(0)
+            }
+            Nodes::PlayerBlock(player_action) => {
+                let mut player = &mut Player{state: Playerstate::Idle, life: 0, current_delay :0};
+                
+                let inputs = player_action.n.children[0].evaluate(sb, ft, pt);
+                let delay = player_action.n.children[1].evaluate(sb, ft, pt);
+
+                let mut playername = String::new();
+                match player_action.n.value.clone(){
+                    NodeValue::String(x) => {
+                        playername = x.clone();
+                        match x.as_str(){
+                            "PLAYER" => {
+                                player = &mut pt.player;
+                            },
+                            "ENEMY" => {
+                                player = &mut pt.enemy;
+                            },
+                            _ => {println!("playername not recognized during evaluate"); return NodeValue::Int(0)}
+                        }
+                    }
+                    _ => {println!("Wrong value recieved during evaluate from player action");}
+                }
+                match delay{
+                    NodeValue::Int(delay) => {
+                        player.current_delay = delay;
+                    }
+                    x => {dbg!(x);}
+                }
+                match inputs{
+                    NodeValue::String(inp) => {println!("{playername} blocked {inp} ");}
+                    _ => {}
+                }
+
+                player.state = Playerstate::Blockstun;
+                return  NodeValue::Int(0)
+            }
+            Nodes::PlayerState(player_action) => {
+                let mut player = &mut Player{state: Playerstate::Idle, life: 0, current_delay :0};
+
+                let mut playername = String::new();
+                let state_to_check = match player_action.n.children[0].evaluate(sb, ft, pt){
+                    NodeValue::String(str_val) => {
+                        match str_val.as_str(){
+                            "IDLE" => {Playerstate::Idle}
+                            "BLOCKSTUN" => {Playerstate::Blockstun},
+                            "HITSTUN" => {Playerstate::Hitstun},
+                            "GROUNDED" => {Playerstate::Grounded},
+                            "ATTACKING" => {Playerstate::Attacking},
+                            "JUMPING" => {Playerstate::Jumping},
+                            _ => {Playerstate::Idle}
+                        }
+                    },
+                    _ => {Playerstate::Idle}
+                };
+
+                match player_action.n.value.clone(){
+                    NodeValue::String(x) => {
+                        playername = x.clone();
+                        match x.as_str(){
+                            "PLAYER" => {
+                                player = &mut pt.player;
+                            },
+                            "ENEMY" => {
+                                player = &mut pt.enemy;
+                            },
+                            _ => {println!("playername not recognized during evaluate"); return NodeValue::Int(0)}
+                        }
+                    }
+                    _ => {println!("Wrong value recieved during evaluate from player action");}
+                };
+
+                let is_same = if state_to_check == player.state { 1 } else { 0 };
+                return NodeValue::Int(is_same);
             }
             Nodes::Wait(thingy) => {
                 let thingmabob = thingy.n.children[0].evaluate(sb, ft, pt);
@@ -751,7 +836,7 @@ impl SymbolTable{
     }
 }
 
-#[derive(Clone,Debug)]
+#[derive(Clone,Debug, PartialEq)]
 pub enum Playerstate{
     Attacking,
     Hitstun,
@@ -1048,6 +1133,14 @@ impl<'a> Parser<'a> {
                         self.tokenizer.select_next();
                         let attack_damage = self.boolean_expression();
                         player_action = Nodes::PlayerHit(PlayerActionNode::new(NodeValue::String(actor_player), vec![attack_input, attack_delay, attack_damage]));
+                        return player_action
+                    }
+                    else if self.tokenizer.next.token.as_str() == "blocks"{
+                        self.tokenizer.select_next();
+                        let attack_input = self.boolean_expression();
+                        self.tokenizer.select_next();
+                        let attack_delay = self.boolean_expression();
+                        player_action = Nodes::PlayerBlock(PlayerActionNode::new(NodeValue::String(actor_player), vec![attack_input, attack_delay]));
                         return player_action
                     }
                 }
@@ -1358,6 +1451,18 @@ impl<'a> Parser<'a> {
             return Nodes::StringVal(stringval_node)
         }
         else if self.tokenizer.next.value == -2 { //É um identifier
+            if self.tokenizer.next.token.as_str() == "PLAYER" || self.tokenizer.next.token.as_str() == "ENEMY"{
+                let playername = self.tokenizer.next.token.clone();
+                self.tokenizer.select_next();
+                if self.tokenizer.next.token.as_str() != "in"{
+                    println!("Erro no código, faltou In depois do {playername}");
+                }
+                self.tokenizer.select_next();
+                let playerstate = self.tokenizer.next.token.clone();
+                self.tokenizer.select_next();
+                return Nodes::PlayerState(PlayerActionNode::new(NodeValue::String(playername), vec![Nodes::StringVal(StringVal::new(NodeValue::String(playerstate), vec![]))]));
+
+            }
             if self.tokenizer.next.token.as_str() == "read"{
                 self.tokenizer.select_next();
                 if self.tokenizer.next.token.as_str() != "("{ println!("parenteses do read não encontrado");}
