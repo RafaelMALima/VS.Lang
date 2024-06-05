@@ -18,8 +18,8 @@ STATEMENT = ( "λ" | ASSIGNMENT | PRINT | WHILE | IF | WAIT | PLAYER_STATEMENT),
 ASSIGNMENT = ( IDENTIFIER, "=", EXPRESSION ) | ("attack", IDENTIFIER, "=" ,EXPRESSION, ",",EXPRESSION,",",EXPRESSION,",",EXPRESSION,",", EXPRESSION) ;
 PRINT = "PRINT", EXPRESSION ;
 WHILE = "while", ":", BOOL_EXP, "\n", "λ", { ( STATEMENT ), "λ" }, "end";
-IF = "if", BOOL_EXP, "then", "\n", "λ", { ( STATEMENT ), "λ" }, ( "λ" | ( "else", "\n", "λ", { ( STATEMENT ), "λ" })), "end" ;
-WAIT = "wait", EXPRESSION;
+IF = "if", ":", BOOL_EXP, "\n", "λ", { ( STATEMENT ), "λ" }, ( "λ" | ( "else", "\n", "λ", { ( STATEMENT ), "λ" })), "end" ;
+WAIT = "wait", BOOL_EXP;
 PLAYER_STATEMENT = ("PLAYER"|"ENEMY"), (("uses" BOOL_EXP "," BOOL_EXP) | ("hit with " BOOL_EXP "," BOOL_EXP "," BOOL_EXP) | (BLOCKS BOOL_EXP "," BOOL_EXP))
 
 BOOL_EXP = BOOL_TERM, { ("or"), BOOL_TERM } ;
