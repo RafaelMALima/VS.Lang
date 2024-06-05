@@ -1,0 +1,13 @@
+begin: INFINITE_COMBO
+    i = 0
+    attack_input = 623HS
+    attack_recovery = 10f 
+    hitstun = 15f
+    attack_damage = 20
+    while : i < 5
+        PLAYER uses attack_input, attack_recovery
+        ENEMY hit with attack_input, hitstun, attack_damage
+        wait attack_recovery
+        i = i + 1
+    end
+end

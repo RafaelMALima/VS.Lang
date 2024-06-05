@@ -31,7 +31,6 @@ begin: BLOCKSTRING
     second_input = 623HS
     second_input_startup = 13f
     second_input_blockstun = 20f
-    print ENEMY in BLOCKSTUN
 
     if: ENEMY in BLOCKSTUN and PLAYER in IDLE
         PLAYER uses second_input, second_input_startup

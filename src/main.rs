@@ -246,14 +246,14 @@ impl EvaluateTrait for Nodes{
                     NodeValue::String(block_name) => {println!("----------------- \n Begining of sequence {} \n-----------------",block_name)},
                     _ => {}
                 }
-                let mut new_pt = Playermap::new();
+                //let mut new_pt = Playermap::new();
                 for child in block.n.children.iter(){
                     let is_return = false;
                     match child{
-                        Nodes::Return(_) => {return child.evaluate(sb, ft, &mut new_pt)},
+                        Nodes::Return(_) => {return child.evaluate(sb, ft, pt)},
                         _ => {}
                     }
-                    child.evaluate(sb,ft,&mut new_pt);
+                    child.evaluate(sb,ft, pt);
                 }
                 match block.n.value.clone(){
                     NodeValue::String(block_name) => {println!("-----------------\n End of sequence {}\n-----------------",block_name)},
@@ -442,7 +442,11 @@ impl EvaluateTrait for Nodes{
                     _ => {}
                 }
                 match attack{
-                    NodeValue::Int(dmg) => {println!("and took {dmg} damage"); player.life -= dmg;}
+                    NodeValue::Int(dmg) => {
+                        player.life = player.life - dmg;
+                        println!("and took {} damage. {} life remains", dmg, player.life);
+                        if player.life <= 0 {println!("O jogador {playername} perdeu")}
+                    }
                     _ => {}
                 }
 
