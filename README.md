@@ -75,13 +75,45 @@ begin: BLOCKSTRING
     attack_damage = 10
 
     PLAYER uses first_input, first_input_startup
-    ENEMY blocks player_attack, enemy_blockstun
+    wait player_recovery
+    ENEMY blocks first_input, enemy_blockstun
 
     wait player_recovery
 
+    second_input = 623HS
+    second_input_startup = 13f
+    second_input_blockstun = 20f
+
     if: ENEMY in BLOCKSTUN and PLAYER in IDLE
-        PLAYER uses player_attack, attack_damage
+        PLAYER uses second_input, second_input_startup
+        ENEMY blocks second_input, second_input_blockstun
     end
 end
+```
+
+## Compilando e rodando o projeto
+Para rodar esse projeto, é necessário que se tenha instalado flex, o bison, a libgcc (parser), e o cargo (interpretador).
+Como o parser foi feito com o flex/bison, e o interpretador com Rust, é necessário essa menagerie de programas
+
+### Usando o parser:  
 
 ```
+make all
+```
+Na raiz do projeto
+
+O arquivo fight, presente na raiz do projeto, é o programa resultante.
+
+Segue como usá-lo
+```
+./fight <arquivo .fight alvo>
+```
+
+### Rodando o interpretador
+
+Para interpretar im programa da linguagem, basta rodar o programa via o cargo, como no exemplo
+
+```
+cargo run <arquivo .fight alvo>
+```
+
