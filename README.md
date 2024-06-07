@@ -98,7 +98,7 @@ Como o parser foi feito com o flex/bison, e o interpretador com Rust, é necess�
 ### Usando o parser:  
 
 ```
-make all
+make fight
 ```
 Na raiz do projeto
 
@@ -117,3 +117,15 @@ Para interpretar im programa da linguagem, basta rodar o programa via o cargo, c
 cargo run <arquivo .fight alvo>
 ```
 
+Ou utilize o comando 
+
+
+```
+make all
+```
+
+Para buildar o executável de release do interpretador. O executável do interpretador, gerado assim, é chamado de fight-interpreter.  
+Para usá-lo. basta usá-la assim:
+```
+./fight-interpreter <arquivo .fight alvo>
+```
