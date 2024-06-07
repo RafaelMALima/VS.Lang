@@ -11,3 +11,8 @@ clean:
 
 rebuild:
 	make clean && make fight
+
+all:
+	make rebuild
+	cargo build --release
+	cp target/release/LogComp-Linguagem fight-interpreter
