@@ -1,4 +1,4 @@
-# FIGHTLANG
+# VS.Lang!
 ## A blazingly fast language for simulating fighting games
 ### APS final - LogComp
 
