@@ -4,7 +4,7 @@
 ## Motivation
 The goal of this language is for it to be a simple and intuitive way for 
 players in the fighting game community to easily theorize, annotate and simulate potential combos,
-sequences, blockstring and OKI, withou needing to actually perform said combos.
+sequences, blockstring and OKI, without needing to actually perform said combos.
 
 ### EBNF da linguagem
 ```
@@ -112,7 +112,7 @@ Segue como usá-lo
 
 ### Rodando o interpretador
 
-Para interpretar im programa da linguagem, basta rodar o programa via o cargo, como no exemplo
+Para interpretar um programa da linguagem, basta rodar o programa via o cargo, como no exemplo
 
 ```
 cargo run <arquivo .fight alvo>
