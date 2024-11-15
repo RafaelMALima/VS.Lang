@@ -1,6 +1,5 @@
 # VS.Lang!
 ## A blazingly fast language for simulating fighting games
-### APS final - LogComp
 
 ## Motivation
 The goal of this language is for it to be a simple and intuitive way for 
